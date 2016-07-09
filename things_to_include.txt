@@ -1,0 +1,17 @@
+letter frequancy analysis
+char/number frequancy analysis
+length of numbers added to the end
+pattern analysis -> phone number (base words), date of birth(base words)
+posistion of extra sysmbols, numbers, capital letters
+word mangling that are mostly used
+length analysis
+number of passwords using pridicted word like iitb, aero
+reapeted passwords
+
+find unique passwords that does not follow any of the above category
+
+extrating base words
+using sysmobls as letters -> eg. replacing 'a' => '@' etc
+
+##NOTE - Wont be able to parallelize it with python
+
