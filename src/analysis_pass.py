@@ -21,10 +21,12 @@ class PassAnalysis:
         self.common_words       = []
         self.rockyou_list       = []
 
-        self.lower_case         = range(97, 123)
-        self.upper_case         = range(65, 91)
-        self.numerical          = range(48, 58)
-        self.symbol             = range(32, 48) + range(91, 97) + range(58, 65) + range(123, 127)
+        lower_case         = range(97, 123)
+        upper_case         = range(65, 91)
+        numerical          = range(48, 58)
+        symbol             = range(32, 48) + range(91, 97) + range(58, 65) + range(123, 127)
+
+        self.ascii_nums      = {'l' : lower_case, 'u' : upper_case, 'n' : numerical, 's' : symbol}
 
     def load_init_json(self):
         """
@@ -42,8 +44,13 @@ class PassAnalysis:
         self.common_words       = load_file(init_json['common_word_list_location'])
 
         print 'Forming the Variables'
-        self.symbol_frequancy   = dict.fromkeys(self.symbol, 0)
-        self.symbol_group_length= dict.fromkeys(range(1, 24), 0)
+        self.frequancy = {'s' : dict.fromkeys(self.ascii_nums['s'], 0), 'l' : dict.fromkeys(self.ascii_nums['l'], 0), 'u' : dict.fromkeys(self.ascii_nums['u'], 0), 'n' : dict.fromkeys(self.ascii_nums['n'], 0)}
+        
+        self.group_length = dict.fromkeys(['luns', dict.fromkeys(range(1, 24), 0))
+        
+        self.group_num   = dict.fromkeys(['luns'], dict.fromkeys(range(1, 10), 0))
+        
+        self.symbol_position    = dict.fromkeys(['luns']dict.fromkeys(['start', 'middle', 'end'], 0))
 
     def __group_pass(self, password):
         """
@@ -59,6 +66,24 @@ class PassAnalysis:
 
         return group
 
+    def __position(password, pass_ord, pass_group, type_position):
+        """
+            Get the position of the first element of the group
+            Gives the position of uppercase, numeric and symbols only
+        """
+        start   = pass_ord[0]
+        end     = pass_ord[-1]
+        result  = ''
+
+        if start in self.ascii_nums[type_position]:
+            result += 's'
+        if end in self.ascii_nums[type_position]:
+            result += 'e'
+
+        if not result and pass_group[type_position]:
+            result = 'm'
+
+        return result
 
     def _get_len(password):
         """
@@ -75,14 +100,9 @@ class PassAnalysis:
 
         result = ''
 
-        if all(i in self.lower_case for i in pass_ord):
-            result += 'l'
-        if all(i in self.upper_case for i in pass_ord):
-            result += 'u'
-        if all(i in self.numerical for i in pass_ord):
-            result += 'n'
-        if all(i in self.symbol for i in pass_ord):
-            result += 's'
+        for case in 'luns':
+            if all(i in self.ascii_nums[case] for i in pass_ord):
+                result += case
 
         return result
 
@@ -90,13 +110,19 @@ class PassAnalysis:
         """
             case is the output of __get_case
         """
-        pass_ord = map(ord, password)
+        pass_ord    = map(ord, password)
+        pass_group  = __group_pass(password)
 
-        if 's' in case:
-            # Get symbol frequancy
-            for sym in self.symbol:
+        for case_type in case:
+            # Get frequancy
+            for sym in self.ascii_nums[case_type]:
                 if sym in pass_ord:
-                    self.symbol_frequancy[sym] += 1
+                    self.frequancy[case_type][sym] += 1
             
-            # Get num of symbol
-            
+            # Get max size of group
+            self.group_length[case_type][max(map(len, pass_group[case_type]))] += 1
+            # Get the number of groups
+            self.group_num[case_type][len(pass_group[case_type])] += 1
+            # Get Position of the elements
+            pos = __position(password, pass_ord, pass_group, case_type)
+            self.symbol_position[case_type][pos] += 1
