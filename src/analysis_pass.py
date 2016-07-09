@@ -57,7 +57,6 @@ class PassAnalysis:
         # Variables for the repetations, first element is count second is list of the repeated words
         self.password_repetation        = {'count' : 0, 'repeated_words' : []}
         self.rockyou_repetation         = {'count' : 0, 'repeated_words' : []}
-        self.rockyou_part_repetation    = {'count' : 0, 'repeated_words' : []}
         self.common_word_repetation     = {'count' : 0, 'repeated_words' : dict.fromkeys(self.common_words, 0)}
 
     def __group_pass(self, password):
@@ -115,7 +114,7 @@ class PassAnalysis:
 
         return result
 
-    def get_frequancy(self, password, case):
+    def _get_frequancy(self, password, case):
         """
             case is the output of __get_case
         """
@@ -143,6 +142,7 @@ class PassAnalysis:
         self.set_all_passwords = list(set(self.all_passwords))
 
         free_ram()
+        print 'Starting the repetation check....'
         for password in self.set_all_passwords:
             if self.all_passwords.count(password) != 1:
                 self.password_repetation['count'] += 1
@@ -155,3 +155,6 @@ class PassAnalysis:
                 if word in password.lower():
                     self.common_words_repetation['count'] += 1
                     self.common_words_repetation['repeated_words'][word] += 1
+        free_ram()
+
+        return 0
