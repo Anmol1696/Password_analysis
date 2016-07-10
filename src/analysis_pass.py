@@ -8,22 +8,24 @@ from src.helping_functions.generic_func import dump_json_file
 import json
 import re
 import sys
+import time
 
 class PassAnalysis:
     """
         All the functions for password analysis
     """
     def __init__(self, init_json_file):
-        """
-            
-            
-The init for the class, define all the variables
+        """ 
+            The init for the class, define all the variables
             init_json_file is the file carrying the information about the required files and words
         """
         self.init_json_file     = init_json_file
         self.all_passwords      = []
         self.common_words       = []
         self.rockyou_list       = []
+
+        # All the passwords with which we faced a problem
+        self.troubling_passwords = []
 
         lower_case         = range(97, 123)
         upper_case         = range(65, 91)
@@ -37,7 +39,6 @@ The init for the class, define all the variables
             Called rigth after init
             'l' -> lower_csae, ''
         """
-        free_ram()
         with open(self.init_json_file) as json_open:
             init_json = json.load(json_open)
 
@@ -94,8 +95,6 @@ The init for the class, define all the variables
         group['n'] = re.findall("[0-9]+", password)
         group['s'] = re.findall("[\ \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/\[\]\^\_\`\:\;\<\=\>\?\@\{\|\}\~]+", password)
 
-        print 'Groups -> ', group
-
         return group
 
     def __position(self, password, pass_ord, pass_group, type_position):
@@ -116,8 +115,6 @@ The init for the class, define all the variables
         if not result and pass_group[type_position]:
             result = 'm'
     
-        print 'Position -> ', result
-
         return result
 
     def _get_len(self, password):
@@ -143,8 +140,6 @@ The init for the class, define all the variables
                     result += case
                     continue
 
-        print 'Case -> ', result
-
         return result
 
     def _get_frequancy(self, password, case):
@@ -153,11 +148,9 @@ The init for the class, define all the variables
         """
         pass_ord    = map(ord, password)
         pass_group  = self.__group_pass(password)
-        print 'Pass group -> ', pass_group
-        print 'Case in freqancy -> ', case
+        
         for case_type in case:
             # Get frequancy
-            print '\tFor case -> ', case_type
             for sym in self.ascii_nums[case_type]:
                 sym_count_pass = pass_ord.count(sym)
                 if sym_count_pass != 0:
@@ -194,6 +187,7 @@ The init for the class, define all the variables
 
         free_ram()
         print 'Starting the repetation check....'
+        
         for password in self.set_all_passwords:
             all_passwords_count = self.all_passwords.count(password)
             rockyou_list_count  = self.rockyou_list.count(password)
@@ -220,13 +214,25 @@ The init for the class, define all the variables
             dump_json_file from the helping functions will e used to perform the dumping
         """
         # Club some variables into one
-        repetation = {'password_repetation' : self.password_repetation, 'rockyou_repetation' : self.rockyou_repetation, 'common_words_repetation' : self.common_word_repetation}
+        repetation = {
+            'password_repetation'       : self.password_repetation, 
+            'rockyou_repetation'        : self.rockyou_repetation, 
+            'common_words_repetation'   : self.common_word_repetation
+        }
 
-        analysis = {'pass_length' : self.pass_length, 'frequancy' : self.frequancy, 'group_length' : self.group_length, 'group_num' : self.group_num, 'case_position' : self.case_position}
+        analysis = {
+            'pass_length'   : self.pass_length,
+            'frequancy'     : self.frequancy, 
+            'group_length'  : self.group_length, 
+            'group_num'     : self.group_num, 
+            'case_position' : self.case_position
+        }
 
-        file_name_data = {'repetation' : repetation, 'analysis' : analysis}
-
-        print file_name_data
+        file_name_data = {
+            'repetation'            : repetation,
+            'analysis'              : analysis,
+            'troubling_passwords'   : self.troubling_passwords
+        }
 
         for file_name, data in file_name_data.iteritems():
             dump_json_file(str(self.json_dump_folder) + '/' + file_name + '.json', 'w', data)
@@ -237,29 +243,37 @@ The init for the class, define all the variables
         """
             This is the main function that calls all the functions and forms the analysis
         """
-        free_ram()
-
         print 'Starting the analysis'
-        for password in self.all_passwords:
-            print 'Password -> ', password
+        
+        for password in self.all_passwords: 
             self._get_len(password)
             case = self._get_case(password)
-            print 'Case cal -> ', case
-            self._get_frequancy(password, case)
+            try:
+                self._get_frequancy(password, case)
+            except:
+                self.troubling_passwords.append(password)
 
         self.get_repetations()
 
         return 0
 
 if __name__ == '__main__':
+    start = time.time()
+    free_ram()
+    
     try:
         init_json_file = sys.argv[1]
-        print init_json_file
     except:
         print sys.argv
         print 'Init json file not mentioned'
         pass
+    
     password_obj = PassAnalysis(init_json_file)
     password_obj.load_init_json()
     password_obj.get_full_analysis()
     password_obj.dump_all_variables_to_json()
+    
+    start = time.stop()
+    free_ram()
+
+    print 'Time taken -> ', (stop - start)/60, 'mins'
