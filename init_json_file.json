@@ -1,0 +1,6 @@
+{
+    "password_list_location"    : "data/test_words",
+    "rockyou_list_location"     : "../../rockyou.txt",
+    "common_word_list_location" : "data/common_words",
+    "json_dump_folder"          : "results/test_folder"
+}
