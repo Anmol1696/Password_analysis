@@ -61,19 +61,19 @@ The init for the class, define all the variables
 
         # The dictionary inside a dictionary is defined seperately else the variable does not work
         for i in 'luns':
-            self.frequancy[i]       = dict.fromkeys(self.ascii_nums[i], 0)
+            self.frequancy[i]           = {}
         
         self.group_length               = dict.fromkeys('luns', None)
         for temp in 'luns':
-            self.group_length[temp]     = dict.fromkeys(range(1, 24), 0)
+            self.group_length[temp]     = {}
         
         self.group_num                  = dict.fromkeys('luns', None)
         for temp in 'luns':
-            self.group_num[temp]        = dict.fromkeys(range(1, 10), 0)
+            self.group_num[temp]        = {}
         
         self.case_position              = dict.fromkeys('luns', None)
         for temp in 'luns':
-            self.case_position[temp]    = dict.fromkeys(['s', 'm', 'e', 'se'], 0)
+            self.case_position[temp]    = {}
 
         # Variables for the repetations, first element is count second is list of the repeated words
         self.password_repetation        = {'count' : 0, 'repeated_words' : {}}
@@ -137,10 +137,6 @@ The init for the class, define all the variables
 
         result = ''
 
-        #for case in 'luns':
-        #    if all(i in self.ascii_nums[case] for i in pass_ord):
-        #        result += case
-    
         for pass_element in pass_ord:
             for case in 'luns':
                 if pass_element in self.ascii_nums[case] and case not in result:
@@ -165,18 +161,30 @@ The init for the class, define all the variables
             for sym in self.ascii_nums[case_type]:
                 sym_count_pass = pass_ord.count(sym)
                 if sym_count_pass != 0:
-                    self.frequancy[case_type][sym] += sym_count_pass
+                    try:
+                        self.frequancy[case_type][chr(sym)] += sym_count_pass
+                    except:
+                        self.frequancy[case_type][chr(sym)] = sym_count_pass
             
             # Get max size of group
-            self.group_length[case_type][max(map(len, pass_group[case_type]))] += 1
-            print '\tIncrement in group_length to ', max(map(len, pass_group[case_type]))
+            try:
+                self.group_length[case_type][max(map(len, pass_group[case_type]))] += 1
+            except: 
+                self.group_length[case_type][max(map(len, pass_group[case_type]))] = 1
+
             # Get the number of groups
-            self.group_num[case_type][len(pass_group[case_type])] += 1
-            print '\tIncrementing group_num to ', len(pass_group[case_type])
+            try:
+                self.group_num[case_type][len(pass_group[case_type])] += 1
+            except: 
+                self.group_num[case_type][len(pass_group[case_type])] = 1
+    
             # Get Position of the elements
             pos = self.__position(password, pass_ord, pass_group, case_type)
-            self.case_position[case_type][pos] += 1
-            print '\tIncrement casae_position to ', pos
+
+            try:
+                self.case_position[case_type][pos] += 1
+            except:
+                self.case_position[case_type][pos] = 1
 
     def get_repetations(self):
         """
@@ -239,9 +247,7 @@ The init for the class, define all the variables
             print 'Case cal -> ', case
             self._get_frequancy(password, case)
 
-        free_ram()
-
-        #self.get_repetations()
+        self.get_repetations()
 
         return 0
 
