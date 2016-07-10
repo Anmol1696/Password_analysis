@@ -3,19 +3,19 @@ Analysis of passwords
 
 # Introduction
 For this project the following terminology have been used. These are as follows<br>
-* `case` point to password consisting of lower case(`l`), upper case(`u`), numericals(`n`) or symbols(`s`). A single password can have a combination of these.
-+ `case_pos`, this is the flag which poins to the rough position where the case was used. These are start(`s`), middle(`m`), end(`e`), start and end(`se`).<br>
+* <b>case</b> point to password consisting of lower case(<i>l</i>), upper case(<i>u</i>), numericals(<i>n</i>) or symbols(<i>s</i>). A single password can have a combination of these.
++ <b>case_pos</b>, this is the flag which poins to the rough position where the case was used. These are start(<i>s</i>), middle(<i>m</i>), end(<i>e</i>), start and end(<i>se</i>).<br>
 
-For example :- "password" will have case position `se` for case `l`, "@password" will have case position `s` for case `s` and case position `e` for case `l`
+For example :- "password" will have case position <i>se</i> for case <i>l</i>, "@password" will have case position <i>s</i> for case <i>s</i> and case position <i>e</i> for case <i>l</i>
 
-+ `group_length`, each password is divided into the chunks of cases. That is all the elements that point to a case which are also togther are chunked together. The max length of the chunk is given in group length for a case
-+ `group_num` is the number of elements present in the group for a particular case<br>
++ <b>group_length</b>, each password is divided into the chunks of cases. That is all the elements that point to a case which are also togther are chunked together. The max length of the chunk is given in group length for a case
++ <b>group_num</b> is the number of elements present in the group for a particular case<br>
 
-For example :- "@!password1234@pass" will be grouped into ['password', 'pass'] for case `l`, ['@!', '@'] for case `s` and ['1234'] for case `n`.<br>
-Here `group_length` is for case `l` is `len('password')` and `group_num` for case `l` is 2 i.e. `len(['password', 'pass'])`<br>
+For example :- "@!password1234@pass" will be grouped into ['password', 'pass'] for case <i>l</i>, ['@!', '@'] for case <i>s</i> and ['1234'] for case <i>n</i>.<br>
+Here <b>group_length</b> is for case <i>l</i> is `len('password')` and <b>group_num</b> for case <i>l</i> is 2 i.e. `len(['password', 'pass'])`<br>
 
-+ `frequancy` is the leter or symbol or numeric frequancy in all the passwords
-+ `troubling` passwords are the list of all the passwords on which the program was not able to run the analysis code. These passwords are left out of the analysis
++ <b>frequancy</b> is the leter or symbol or numeric frequancy in all the passwords
++ <b>troubling</b> passwords are the list of all the passwords on which the program was not able to run the analysis code. These passwords are left out of the analysis
 
 # Working
 Given a list of passwords, this scirpt will give out some basic analysis.<br> 
