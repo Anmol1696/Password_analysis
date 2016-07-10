@@ -13,7 +13,7 @@ def free_ram():
     """
     print 'Freeing Ram..'
     os.system('echo 1 > /proc/sys/vm/drop_caches')
-    time.sleep('1')
+    time.sleep(1)
     
     return 0
 
@@ -31,7 +31,7 @@ def load_file(file_name):
 
     return variable
 
-def dump_json_file(json_file_name, open_type, dict_data)
+def dump_json_file(json_file_name, open_type, dict_data):
     """
         Dump the json data into the file
         open_type is 'w'or 'a'
@@ -40,3 +40,17 @@ def dump_json_file(json_file_name, open_type, dict_data)
     with open(json_file_name, open_type) as json_file:
         json.dump(dict_data, json_file)
     free_ram()
+
+def clean_dict_tree(dict_data, default_value, dict_keys='luns'):
+    """
+        this will propogate through the dict and at the lowest level, clean the dict i.e. remove the keys with the default values
+    """
+    for key in dict_keys:
+        for child_key, value in dict_data[key].iteritems():
+            if value == default_value:
+                dict_data[key].__delitem__(child_key)
+
+        if dict_data[key]:
+            dict_data.__delitem__(key)
+    
+    return dict_data
